@@ -1,0 +1,99 @@
+# 启用保护的世界列表，留空则全世界都启用保护
+worlds: [ ]
+
+# 消息设置相关
+message:
+  # 加入服务器消息
+  join: ''
+  # 退出服务器消息
+  quit: ''
+
+# 启用物品合成
+allow-craft: true
+# 启用配方补全
+allow-recipe: true
+
+# 阻止掉落虚空
+void-protect: true
+
+# 交互容器
+inventory:
+  # 是否阻止
+  block: true
+  # 留空则所有容器都阻止
+  type:
+    # 信标
+    - BEACON
+    # 铁砧
+    - ANVIL
+    # 酿造台
+    - BREWING
+    # 工作台
+    - WORKBENCH
+    # 附魔台
+    - ENCHANTING
+    # 切石机
+    - STONECUTTER
+    # 砂轮
+    - GRINDSTONE
+    # 织布机
+    - LOOM
+    # 制图台
+    - CARTOGRAPHY
+    # 熔炉
+    - FURNACE
+    # 烟熏炉
+    - BLAST_FURNACE
+    # 烟熏炉
+    - SMOKER
+    # 锻造台
+    - SMITHING
+
+# 方块交互
+interact:
+  # 是否阻止
+  block: true
+  # 留空则所有方块都阻止
+  type: [ ]
+
+# 阻止游戏特征
+block-features:
+  # 创造模式射出的弓箭的停留
+  - PROJECTILE_ARROW
+  # 鱼竿钓动盔甲架
+  - PROJECTILE_FISH
+  # 繁殖
+  - BREED
+  # 树叶消散
+  - LEAVES_DECAY
+  # 生物修改方块
+  - ENTITY_CHANGE_BLOCK
+  # 踩坏农田
+  - FARMLAND_PHYSICAL
+  # 展示物破坏
+  - HANGING_BREAK
+  # 实体爆炸
+  - ENTITY_EXPLODE
+  # 方块爆炸
+  - BLOCK_EXPLODE
+  # 入侵
+  - RAID
+  # 禁止生长
+  - GROW
+  # 禁止蔓延
+  - SPREAD
+  # 成就
+  - ACHIEVEMENT
+  # 伤害实体
+  - DAMAGE_ENTITY
+
+# 阻止传送类型
+block-teleport:
+  # 下届传送门
+  - NETHER_PORTAL
+  # 末影珍珠
+  - ENDER_PEARL
+  # 末地折跃门
+  - END_GATEWAY
+  # 末地传送门
+  - END_PORTAL
