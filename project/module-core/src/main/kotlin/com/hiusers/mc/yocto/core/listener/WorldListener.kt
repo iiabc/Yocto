@@ -155,13 +155,19 @@ object WorldListener {
     fun event(ev: PlayerMoveEvent) {
         if (!ev.player.inProtectWorld()) return
         val to = ev.to!!
-        if (ev.from.x != to.x || ev.from.y != to.y || ev.from.z != to.z) {
-            if (to.y < 10 && Yocto.voidProtect) {
-                ev.isCancelled = true
-                // 返回大厅
+        if (Yocto.voidProtect && (ev.from.x != to.x || ev.from.y != to.y || ev.from.z != to.z)) {
+            // 使用世界最小高度作为虚空阈值（1.18+），老版本回退为 0
+            val minY = try { ev.player.world.minHeight } catch (_: Throwable) { 0 }
+            // 仅当玩家向下坠落并低于最小高度时触发
+            if (to.y < ev.from.y && to.blockY < minY + 1) {
+                // 直接传送而不取消事件，避免被“送回原地”的橡皮筋体验
+                val p = ev.player
+                p.velocity = Vector(0, 0, 0)
+                p.fallDistance = 0f
+                p.teleport(p.world.spawnLocation)
+                // 再次归零以防某些实现中落地判定在下一 tick 发生
                 submit {
-                    ev.player.velocity = Vector(0, 0, 0)
-                    ev.player.teleport(ev.player.world.spawnLocation)
+                    p.fallDistance = 0f
                 }
             }
         }
