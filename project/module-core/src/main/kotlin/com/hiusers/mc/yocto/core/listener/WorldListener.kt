@@ -4,9 +4,7 @@ import com.hiusers.mc.yocto.core.Yocto
 import com.hiusers.mc.yocto.core.Yocto.bypass
 import com.hiusers.mc.yocto.core.Yocto.inProtectWorld
 import org.bukkit.Material
-import org.bukkit.entity.Hanging
-import org.bukkit.entity.LivingEntity
-import org.bukkit.entity.Player
+import org.bukkit.entity.*
 import org.bukkit.event.block.*
 import org.bukkit.event.entity.*
 import org.bukkit.event.hanging.HangingBreakByEntityEvent
@@ -92,15 +90,53 @@ object WorldListener {
 
     @SubscribeEvent
     fun event(e: EntityDamageByEntityEvent) {
-        val player = e.attacker ?: return
-        if ("HANGING_BREAK" in Yocto.blockFeatures && !player.bypass(true) && e.entity is Hanging) {
-            if (!player.inProtectWorld()) return
+        val damager = e.damager
+        val victim = e.entity
+        
+        // 处理展示物破坏
+        if ("HANGING_BREAK" in Yocto.blockFeatures && !damager.bypass(true) && victim is Hanging) {
+            if (!damager.inProtectWorld()) return
             e.isCancelled = true
-        } else if ("DAMAGE_ENTITY" in Yocto.blockFeatures) {
-            // 获取造成伤害的实体
-            val attacker = e.attacker ?: return
-            if (attacker is Player && attacker.inProtectWorld() && !player.bypass()) {
-                e.isCancelled = true
+            return
+        }
+        
+        // 处理 DAMAGE_ENTITY 保护（包括玩家对玩家、弓箭、药水等所有伤害）
+        if ("DAMAGE_ENTITY" in Yocto.blockFeatures) {
+            // 获取实际造成伤害的玩家（可能是直接攻击者，也可能是投射物的发射者）
+            val attackerPlayer: Player? = when (damager) {
+                is Player -> damager
+                is Arrow -> {
+                    // 弓箭伤害：检查发射者是否为玩家
+                    val shooter = damager.shooter
+                    if (shooter is Player) shooter else null
+                }
+                is ThrownPotion -> {
+                    // 投掷药水伤害：检查投掷者是否为玩家
+                    val thrower = damager.shooter
+                    if (thrower is Player) thrower else null
+                }
+                is AreaEffectCloud -> {
+                    // 药水云伤害：检查来源
+                    val source = damager.source
+                    if (source is Player) source else null
+                }
+                else -> null
+            }
+            
+            // 如果攻击者是玩家，检查是否需要保护
+            if (attackerPlayer != null) {
+                // 检查攻击者是否在受保护的世界且有权限
+                if (attackerPlayer.inProtectWorld() && !attackerPlayer.bypass()) {
+                    // 如果受害者是玩家，需要检查受害者是否也在受保护的世界
+                    if (victim is Player) {
+                        if (victim.inProtectWorld()) {
+                            e.isCancelled = true
+                        }
+                    } else {
+                        // 如果受害者不是玩家，也保护（原有逻辑：禁止玩家伤害所有实体）
+                        e.isCancelled = true
+                    }
+                }
             }
         }
     }
