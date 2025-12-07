@@ -29,6 +29,7 @@ subprojects {
         version {
             taboolib = taboolibVersion
         }
+        relocate("top.maplex.arim", "${rootProject.group}.libs.maplex.arim")
     }
 
     // 全局仓库
@@ -37,6 +38,7 @@ subprojects {
         maven("https://repo.hiusers.com/releases")
         maven("https://repo.codemc.io/repository/maven-releases/")
         maven("https://repo.codemc.io/repository/maven-snapshots/")
+        maven("https://repo.momirealms.net/releases/")
     }
 
     // 全局依赖
@@ -48,21 +50,27 @@ subprojects {
 
         implementation("top.maplex.arim:Arim:1.2.14")
         compileOnly("com.github.retrooper:packetevents-spigot:2.9.5")
+        compileOnly("net.momirealms:craft-engine-core:0.0.66")
+        compileOnly("net.momirealms:craft-engine-bukkit:0.0.66")
     }
     // 编译配置
     java {
         withSourcesJar()
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
     }
 
     tasks.withType<JavaCompile> {
         options.encoding = "UTF-8"
+        options.release.set(21)
     }
 
     tasks.withType<KotlinCompile> {
         kotlinOptions {
-            jvmTarget = "17"
+            jvmTarget = "21"
             freeCompilerArgs = listOf("-Xjvm-default=all", "-Xextended-compiler-checks")
         }
     }

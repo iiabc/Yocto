@@ -15,6 +15,9 @@ taboolib {
         links {
             name("homepage").url("https://iplugin.hiusers.com/")
         }
+        dependencies {
+            name("CraftEngine").optional(true)
+        }
     }
 
     classifier = null
